@@ -14,16 +14,19 @@ from skyfield.almanac import find_discrete, sunrise_sunset
 from django.conf import settings
 
 # # Global variables
+#from .models import Stat_Images
+#si = Stat_Images.objects.get(ids = 100)
+#print("here here *************")
 
-
-
-img = cv.imread('static/chart_frame_equal_house.jpg', 0)
-image_original=copy.deepcopy(img)
-grid_img = cv.imread('static/aspect_grid_frame_withceres.jpg', 0)
-grid_original=copy.deepcopy(grid_img)
+#img = cv.imread('static/chart_frame_equal_house.jpg', 0)
+#ims = np.asarray(bytearray(si.chart_frame.read()), dtype="uint8")
+#img = cv.imdecode(ims, 0)
+#image_original=copy.deepcopy(img)
+#ims = np.asarray(bytearray(si.aspact_frame.read()), dtype="uint8")
+#grid_img = cv.imdecode(ims, 0)
+#grid_img = cv.imread('static/aspect_grid_frame_withceres.jpg', 0)
+#grid_original=copy.deepcopy(grid_img)
 font = cv.FONT_HERSHEY_SIMPLEX
-
-
 
 
 ts = load.timescale()
@@ -136,8 +139,9 @@ def intersect_circle(angle,r):
 
 
 def insert_image(imgA, p_name, x, y):
-    local = 'static/'+p_name+'.jpg'
-    obj = cv.imread(local, 0)
+    #local = 'static/'+p_name+'.jpg'
+    #obj = cv.imread(local, 0)
+    obj = local[p_name]
     length, bredth = obj.shape
     len_half, bre_half = int(length/2), int(bredth/2)
     p = q = 0
@@ -412,8 +416,9 @@ def show_report(row, As, grid, t):
 
 
 
-def draw_chart(t, rows, tsp):
-
+def draw_chart(t, rows, tsp, image_original, grid_original, icons):
+    global local
+    local = icons
 #     t, rows, tsp = get_angles()
     row = rows.loc[0]
     print('...1')

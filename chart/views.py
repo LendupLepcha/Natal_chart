@@ -4,6 +4,31 @@ from . import forms
 from .models import Zodiac, Aspects
 from . import natal as nt
 ts = nt.load.timescale()
+from .models import Stat_Images
+
+np = nt.np
+cv = nt.cv
+img = cv.imread('../media/chart_frame_equal_house.jpg', 0)
+grid_img = cv.imread('../media/aspect_grid_frame_withceres.jpg', 0)
+local = {}
+local['sun'] = cv.imread('../media/sun.jpg', 0)
+local['moon'] = cv.imread('../media/moon.jpg', 0)
+local['mercury'] = cv.imread('../media/mercury.jpg', 0)
+local['venus'] = cv.imread('../media/venus.jpg', 0)
+local['mars'] = cv.imread('../media/mars.jpg', 0)
+local['jupiter'] = cv.imread('../media/jupiter.jpg', 0)
+local['saturn'] = cv.imread('../media/saturn.jpg', 0)
+local['uranus'] = cv.imread('../media/uranus.jpg', 0)
+local['neptune'] = cv.imread('../media/neptune.jpg', 0)
+local['pluto'] = cv.imread('../media/pluto.jpg', 0)
+local['ceres'] = cv.imread('../media/ceres.jpg', 0)
+local['conjunction'] = cv.imread('../media/conjunction.jpg', 0)
+local['opposition'] = cv.imread('../media/opposition.jpg', 0)
+local['sextile'] = cv.imread('../media/sextile.jpg', 0)
+local['square'] = cv.imread('../media/square.jpg', 0)
+local['trine'] = cv.imread('../media/trine.jpg', 0)
+
+
 
 def view_create(request):
     global e_u, time_e, point, aspect
@@ -19,7 +44,7 @@ def view_create(request):
             instance.save()
             if e_u != 0:
                 t, row, tsp = nt.get_angles(e_u.year, e_u.month, e_u.day, e_u.hour, e_u.minute, e_u.latitude, e_u.longitude)
-                point,aspect = nt.draw_chart(t, row, tsp)
+                point,aspect = nt.draw_chart(t, row, tsp, img, grid_img, local)
                 time_e = t.utc_jpl()
                 
                 for i in aspect:
