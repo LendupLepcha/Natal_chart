@@ -12,6 +12,21 @@ from skyfield.constants import GM_SUN_Pitjeva_2005_km3_s2 as GM_SUN
 from skyfield.units import Distance
 from skyfield.almanac import find_discrete, sunrise_sunset
 from django.conf import settings
+from .models import User_info
+from django.core.files.base import ContentFile
+from PIL import Image as im
+#from PIL import ImageTk
+from django.core.files import File
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
+#from Tkinter import Tk, Label
+#from django.contrib.staticfiles.utils import get_files
+#from django.contrib.staticfiles.storage import StaticFilesStorage
+
+#s = StaticFilesStorage()
+#list(get_files(s, location='media'))
+
+
 
 # # Global variables
 #from .models import Stat_Images
@@ -174,10 +189,13 @@ def locate_arrow(angle,image,p_name,inner=True):
     # _clock
     xa, ya = intersect_circle(angle, r_a) #  for text
     # _clock
-    img = cv.arrowedLine(image, (x_base+349,349-y_base), (x+349,349-y), 0, 1, tipLength= .5)
+    #print(" arrow start ")
+    #img = cv.arrowedLine(image, (x_base+349,349-y_base), (x+349,349-y), 0, 1, tipLength= .5)
 #     img = cv.putText(img,p_name[:2],(xa+349,349-ya), font, .3,(0),1,cv.LINE_AA);
 #     img = cv.rectangle(img, (xa+349-7,349-ya-7), (xa+349+7,349-ya+7), 0, 1)
+    #print(" arrow end ")
     img = insert_image(image, p_name, xa+349, 349-ya)
+    #print(" imageinserted ")
     return img
 
 
@@ -295,7 +313,7 @@ def draw_grid(row, grid, img2):
 #                 print(sname)
                 string = gdata[1].upper()+' '+str(int(round(gdata[2])))
                 img2 = insert_image(img2, sname, x+22+(j*45), y-27+(i*45))
-                cv.putText(img2,string,(x+12+(j*45), y-12+(i*45)), font, .3,(0),1,cv.LINE_AA);
+                #cv.putText(img2,string,(x+12+(j*45), y-12+(i*45)), font, .3,(0),1,cv.LINE_AA);
     return img2
 
 
@@ -339,12 +357,12 @@ def houses(image, t, tsp):
         x1, y1 = intersect_circle(angle,250)
         x, y = intersect_circle(angle,125)
         xh, yh = intersect_circle(hangle,135)
-        cv.line(image,(x1+349, 349-y1),(x+349, 349-y),0,thick)
+        #cv.line(image,(x1+349, 349-y1),(x+349, 349-y),0,thick)
         txt = str(i+1)
-        cv.putText(image,txt,(xh+343, 352-yh), font, .3,(0),1,cv.LINE_AA)
+        #cv.putText(image,txt,(xh+343, 352-yh), font, .3,(0),1,cv.LINE_AA)
         if(i == 0):
             x0, y0 = intersect_circle(As,270)
-            cv.putText(image,'As',(x0+343, 352-y0), font, .5,(0),1,cv.LINE_AA);
+            #cv.putText(image,'As',(x0+343, 352-y0), font, .5,(0),1,cv.LINE_AA);
     return As, image
 
 
@@ -416,20 +434,23 @@ def show_report(row, As, grid, t):
 
 
 
-def draw_chart(t, rows, tsp, image_original, grid_original, icons):
-    global local
-    local = icons
+def draw_chart(t, rows, tsp, images_stat, entry_t):
+    global local, image, grid_image
+    local = images_stat
+    image = copy.copy(images_stat['chart_frame_equal_house'])
+    grid_image= copy.copy(images_stat['aspect_grid_frame_withceres'])
 #     t, rows, tsp = get_angles()
     row = rows.loc[0]
     print('...1')
-    image = copy.deepcopy(image_original)
-    grid_image=copy.deepcopy(grid_original)
+    #image = copy.deepcopy(image_original)
+    #grid_image=copy.deepcopy(grid_original)
     
     inner_s = True
     # print(Planet_names)
     
     for i, j in zip(row, Planet_names) :
         inner_s = check_row(i, j, row)
+#        print('1.1s ')
         image = locate_arrow(i, image, p_name = j, inner = inner_s)
     print('...2')
     As, image = houses(image, t, tsp)
@@ -439,8 +460,29 @@ def draw_chart(t, rows, tsp, image_original, grid_original, icons):
     print('...4')
     point, aspect = show_report(row, As, grid, t)  #As
     print('...5')
-    cv.imwrite('media/natal_chart.jpg', image)
-    cv.imwrite('media/aspect_grid.jpg', grid_image)
+    ui = User_info.objects.get(entry_time = entry_t)
+    #ret, buf = cv.imencode('.jpg', image) # cropped_image: cv2 / np array
+    #content = ContentFile(buf.tobytes())
+    #ui.image.save('natal_chart.jpg', content)
+    #cv.imwrite('media/natal_chart.jpg', image)
+    #cv.imwrite('media/aspect_grid.jpg', grid_image)
+    image_data = im.fromarray(image)
+    grid_data = im.fromarray(grid_image)
+    print('...6')
+    #image_data.save("/projects/natalchart/site/public/media/natal_chart_final.jpg", "JPEG")
+    #thumb_file = File(image_data)
+    tempfile_io = BytesIO()
+    image_data.save(tempfile_io, format='JPEG')
+    image_file = InMemoryUploadedFile(tempfile_io, None, 'natal_chart_final.jpg','image/jpeg',tempfile_io.getbuffer().nbytes, None)
+    ui.natal_chart.save('natal_chart_final.jpg', image_file)
+
+    tempfile_io2 = BytesIO()
+    grid_data.save(tempfile_io2, format='JPEG')
+    grid_file = InMemoryUploadedFile(tempfile_io2, None, 'aspect_grid_final.jpg','image/jpeg',tempfile_io2.getbuffer().nbytes, None)
+    ui.aspect_grid.save('aspect_grid_final.jpg', grid_file)
+    
+#ui.save()
+    print("...7")
 #     print(point)
 #     print(aspect)
     return point, aspect
