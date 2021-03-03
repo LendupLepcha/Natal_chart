@@ -1,5 +1,3 @@
-
-
 import os
 import numpy as np
 import math
@@ -43,11 +41,7 @@ from io import BytesIO
 #grid_original=copy.deepcopy(grid_img)
 font = cv.FONT_HERSHEY_SIMPLEX
 
-
 ts = load.timescale()
-
-
-
 planets=[
     'sun',
     'moon',
@@ -90,9 +84,6 @@ zodiacs = {
 zodiac = pd.DataFrame(zodiacs)
 eph = load_file(os.path.join(settings.MEDIA_ROOT, 'de421.bsp'))
 
-
-
-
 earth = eph['earth']
 coordinates = wgs84.latlon( 27.3314 , 88.6138)
 location = earth + coordinates
@@ -100,9 +91,6 @@ location = earth + coordinates
 P= {}
 for i, j in zip(planets, Planet_names[:-1]):
     P[j] = eph[i]
-
-
-
 
 with load.open(os.path.join(settings.MEDIA_ROOT,'MPCORB.excerpt.DAT')) as f:
     minor_planets = mpc.load_mpcorb_dataframe(f)
@@ -113,9 +101,6 @@ ceres = sun + mpc.mpcorb_orbit(row_ceres, ts, GM_SUN)
 
 
 # # Draw intersect of a line and circle (Given angle from center)
-
-
-
 def intersect_circle(angle,r):
 #     m = 3.14
     signx = -1
@@ -150,9 +135,6 @@ def intersect_circle(angle,r):
 
 
 
-
-
-
 def insert_image(imgA, p_name, x, y):
     #local = 'static/'+p_name+'.jpg'
     #obj = cv.imread(local, 0)
@@ -171,12 +153,8 @@ def insert_image(imgA, p_name, x, y):
 
 
 # # Draw arrow pointing the angle location
-
-
-
 def locate_arrow(angle,image,p_name,inner=True):
-    
-#     p_name = 
+#     p_name =
     if (inner): # inner (True) means arrow from inside the circle
         r, r_b, r_a = 250, 232, 228
     else:
@@ -200,9 +178,6 @@ def locate_arrow(angle,image,p_name,inner=True):
 
 
 # # Read angles of planets
-
-
-
 def get_angles(y, m, d, h, mins, lat, lon):
     # print('Enter Date and Time')
     # y = int(input('Year: '))
@@ -213,8 +188,8 @@ def get_angles(y, m, d, h, mins, lat, lon):
     # sec = int(input('second: '))
     tx = ts.utc(y, m, d, h, mins)
     tsp = [ts.utc(y, m, d), ts.utc(y, m, d+1)]
-    print('Date : ', tx.utc_jpl())
-    print('Enter Location')
+    #print('Date : ', tx.utc_jpl())
+    #print('Enter Location')
     # lat = float(input('Latitude:'))
     # lon = float(input('Longitude:'))
     coordinates = wgs84.latlon( lat, lon)
@@ -234,7 +209,6 @@ def get_angles(y, m, d, h, mins, lat, lon):
     return tx, rowpd, tsp;
 
 
-
 def check_row(degree, name, row):
     a = copy.deepcopy(row)
 #     i = list(Planet_names).index(name)
@@ -249,9 +223,6 @@ def check_row(degree, name, row):
 
 
 # ## aspect_grid function
-
-
-
 def aspect_grid(row, p_names):
     grid = [[0 for i in range(len(row))] for j in range(len(row))]
     for i in range(len(row)):
@@ -282,13 +253,11 @@ def aspect_grid(row, p_names):
                 a = diff - s
                 if(a < 0):
                     b = 'a'
-                else: 
+                else:
                     b = 's'
                 cell = [s, b, abs(a)]
                 grid[i][j] = cell
     return grid
-            
-
 
 
 
@@ -318,9 +287,6 @@ def draw_grid(row, grid, img2):
 
 
 # # Calc rising sign
-
-
-
 def rising(time, tsp):
     t, y = find_discrete(tsp[0], tsp[1], sunrise_sunset(eph, coordinates))
     for i, j in zip(t, y):
@@ -338,12 +304,8 @@ def rising(time, tsp):
 
 
 # # Draw houses
-
-
-
 def houses(image, t, tsp):
     As = rising(t, tsp)
-    
     for i in range(12):
         thick = 1
         angle = As + (i * 30)
@@ -367,9 +329,6 @@ def houses(image, t, tsp):
 
 
 # # Chart point Report
-
-
-
 def show_report(row, As, grid, t):
     planet = row.to_frame()
     planet = planet.T
@@ -384,13 +343,13 @@ def show_report(row, As, grid, t):
         houses[i+1] = [langle, hangle]
     house = pd.DataFrame(houses)
     # zodiac = pd.DataFrame(zodiacs)
-    planet.insert(0, "Ascendant", [As], True) 
+    planet.insert(0, "Ascendant", [As], True)
     # planet['Ascendant'] = As
     points = []
     # for zs in zodiac:
     #     if(angle >= zodiac[j][0] and angle < zodiac[j][1]):
     #             de = angle - zodiac[j][0]
-    #             zz = zs 
+    #             zz = zs
     # points.append(['Ascendant', zz, de, 1, As])
 
     for i in planet:
@@ -398,13 +357,12 @@ def show_report(row, As, grid, t):
         if angle>=360:
             angle = angle - 360
         d = 0
-        h = '' 
+        h = ''
         z = ''
         for j, k in zip(zodiac,house):
             if(angle >= zodiac[j][0] and angle < zodiac[j][1]):
                 d = angle - zodiac[j][0]
                 z = j
-                
             if(angle >= house[k][0] and angle < house[k][1]):
                 h = k
             elif(angle >= 330 or angle < 30):
@@ -414,7 +372,7 @@ def show_report(row, As, grid, t):
                         break
         if( i == 'Ascendent'):
             h = 1
-        points.append([i, z, d, h, angle])  
+        points.append([i, z, d, h, angle])
 #     pointr = pd.DataFrame(points, columns=['point', 'zodiac', 'zodiac_longitude', 'house', 'RA'])
     aspect_report = []
     for i in range(len(Planet_names)):
@@ -431,9 +389,6 @@ def show_report(row, As, grid, t):
 
 
 # # Main Func
-
-
-
 def draw_chart(t, rows, tsp, images_stat, entry_t):
     global local, image, grid_image
     local = images_stat
@@ -441,25 +396,23 @@ def draw_chart(t, rows, tsp, images_stat, entry_t):
     grid_image= copy.copy(images_stat['aspect_grid_frame_withceres'])
 #     t, rows, tsp = get_angles()
     row = rows.loc[0]
-    print('...1')
+#    print('...1')
     #image = copy.deepcopy(image_original)
     #grid_image=copy.deepcopy(grid_original)
-    
     inner_s = True
     # print(Planet_names)
-    
     for i, j in zip(row, Planet_names) :
         inner_s = check_row(i, j, row)
 #        print('1.1s ')
         image = locate_arrow(i, image, p_name = j, inner = inner_s)
-    print('...2')
+#    print('...2')
     As, image = houses(image, t, tsp)
-    print('...3')
+#    print('...3')
     grid = aspect_grid(row, Planet_names)
     grid_image = draw_grid(row, grid, grid_image)
-    print('...4')
+#    print('...4')
     point, aspect = show_report(row, As, grid, t)  #As
-    print('...5')
+#    print('...5')
     ui = User_info.objects.get(entry_time = entry_t)
     #ret, buf = cv.imencode('.jpg', image) # cropped_image: cv2 / np array
     #content = ContentFile(buf.tobytes())
@@ -468,7 +421,7 @@ def draw_chart(t, rows, tsp, images_stat, entry_t):
     #cv.imwrite('media/aspect_grid.jpg', grid_image)
     image_data = im.fromarray(image)
     grid_data = im.fromarray(grid_image)
-    print('...6')
+ #   print('...6')
     #image_data.save("/projects/natalchart/site/public/media/natal_chart_final.jpg", "JPEG")
     #thumb_file = File(image_data)
     tempfile_io = BytesIO()
@@ -480,15 +433,8 @@ def draw_chart(t, rows, tsp, images_stat, entry_t):
     grid_data.save(tempfile_io2, format='JPEG')
     grid_file = InMemoryUploadedFile(tempfile_io2, None, 'aspect_grid_final.jpg','image/jpeg',tempfile_io2.getbuffer().nbytes, None)
     ui.aspect_grid.save('aspect_grid_final.jpg', grid_file)
-    
 #ui.save()
-    print("...7")
+#    print("...7")
 #     print(point)
 #     print(aspect)
     return point, aspect
-
-#     cv.imshow('Aspect_grid',grid_image)
-#     cv.imshow('Natal_Chart', image)
-#     cv.waitKey(0)
-#     cv.destroyAllWindows()
-

@@ -13,7 +13,7 @@ cv = nt.cv
 file_to_read = open(os.path.join(settings.MEDIA_ROOT, 'images.pickle'), "rb")
 images_stat = pickle.load(file_to_read)
 file_to_read.close()
-print(images_stat['sun'])
+#print(images_stat['sun'])
 from .models import User_info
 #img = cv.imread('../media/chart_frame_equal_house.jpg', 0)
 #grid_img = cv.imread('../media/aspect_grid_frame_withceres.jpg', 0)
@@ -43,6 +43,7 @@ def view_create(request):
         form = forms.TakeInput(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
+            instance.name = request.user
             time = ts.utc(instance.year, instance.month, instance.day, instance.hour, instance.minute)
             instance.datetime = time.utc_jpl()
             # instance.author = request.user

@@ -1,14 +1,15 @@
-
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.staticfiles.urls import static
 from . import views
 from chart import views as chart_view
+from accounts import views as account_view
 from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', chart_view.view_create),
+    path('', account_view.view_login),
+    path('accounts/', include('accounts.urls')),
     path('chart/', include('chart.urls'))
 ]
 
