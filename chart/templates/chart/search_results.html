@@ -1,0 +1,63 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+
+
+<div class="wrapper">
+    <h2 >Results here</h2>
+    {% csrf_token %}
+    <h3>
+        Date : {{results.time}} </br>
+        <!-- Location : {{results.latitude}} , {{results.longitude}} -->
+        <h2>Location: <text id="lat_num">{{results.latitude}}</text> <text class="latitude" id="latitude">N</text>, <text id="lon_num">{{results.longitude}}</text> <text class="longitude" id="longitude">E</text> </h2>
+    <script src="/static/directions.js"></script>
+    </h3>
+    <div class="result_tables">
+        <table class="aspect_grid_report" style="overflow-y:scroll" >
+            <caption style="text-align:center">Aspects:</caption> 
+            <tr>
+                <th>Name</th>
+                <th>Body1</th>
+                <th>Body2</th>
+                <th>Shape</th>
+                <th>Degree Type</th>
+                <th>Degree</th>
+            </tr>
+            
+            {% for i in asp %}
+            <tr>
+                <td>{{i.name}}</td>
+                <td>{{i.body1}}</td>
+                <td>{{i.body2}} </td>
+                <td>{{i.shape}} </td>
+                <td>{{i.degree_type}} </td>
+                <td>{{i.degree}} </td>
+            </tr>
+            {% endfor %}
+        </table>
+    
+        <table class="points_report" style="overflow-y:scroll" >
+            <caption style="text-align:center">Points:</caption> 
+            <tr>
+                <th>Name</th>
+                <th>Point</th>
+                <th>Zodiac</th>
+                <th>Zlon</th>
+                <th>House</th>
+                <th>RA</th>
+            </tr>
+            
+            {% for i in zod %}
+            <tr>
+                <td>{{i.name}}</td>
+                <td>{{i.point}}</td>
+                <td>{{i.zodiac}} </td>
+                <td>{{i.z_longitude}} </td>
+                <td>{{i.house}} </td>
+                <td>{{i.RA}} </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+
+
+<div class="wrapper">
+    <h2 >Search data</h2>
+    
+    <form action="{% url 'chart:search_results' %}" method = "POST" class="search-form">
+        {% csrf_token %}
+        <p>Enter time (UTC +0:00):</p>
+        <div class="enter-date">
+            {{ form.syear.errors }}
+            <label for="id_syear">Year:</label>
+            {{form.syear}}
+
+            {{ form.smonth.errors }}
+            <label for="id_smonth">Month:</label>
+            {{form.smonth}}
+            {{ form.sday.errors }}
+            <label for="id_sday">Day:</label>
+            {{form.sday}}
+        </div>
+        <div class="enter-time">
+            {{ form.shour.errors }}
+            <label for="id_shour">Hour:</label>
+            {{form.shour}}
+            {{ form.sminute.errors }}
+            <label for="id_sminute">Minute:</label>
+            {{form.sminute}}
+        </div>
+        <p>Location:</p>
+        <div class="enter-location">
+            {{ form.slatitude.errors }}
+            <label for="id_slatitude">Latitude:</label>
+            {{form.slatitude}}
+            {{ form.slongitude.errors }}
+            <label for="id_slongitude">Longitude:</label>
+            {{form.slongitude}}
+        </div>
+        
+        <input type="submit" value="Search">
+    </form>
+</div>
+{% endblock %}

@@ -3,7 +3,9 @@ from django.http import HttpResponse
 from . import forms
 from .models import Zodiac, Aspects
 from . import natal as nt
+from django.contrib.auth.decorators import login_required
 ts = nt.load.timescale()
+from django.contrib import messages 
 #from .models import Stat_Images
 import pickle
 import os
@@ -15,28 +17,9 @@ images_stat = pickle.load(file_to_read)
 file_to_read.close()
 #print(images_stat['sun'])
 from .models import User_info
-#img = cv.imread('../media/chart_frame_equal_house.jpg', 0)
-#grid_img = cv.imread('../media/aspect_grid_frame_withceres.jpg', 0)
-#local = {}
-#local['sun'] = cv.imread('../media/sun.jpg', 0)
-#local['moon'] = cv.imread('../media/moon.jpg', 0)
-#local['mercury'] = cv.imread('../media/mercury.jpg', 0)
-#local['venus'] = cv.imread('../media/venus.jpg', 0)
-#local['mars'] = cv.imread('../media/mars.jpg', 0)
-#local['jupiter'] = cv.imread('../media/jupiter.jpg', 0)
-#local['saturn'] = cv.imread('../media/saturn.jpg', 0)
-#local['uranus'] = cv.imread('../media/uranus.jpg', 0)
-#local['neptune'] = cv.imread('../media/neptune.jpg', 0)
-#local['pluto'] = cv.imread('../media/pluto.jpg', 0)
-#local['ceres'] = cv.imread('../media/ceres.jpg', 0)
-#local['conjunction'] = cv.imread('../media/conjunction.jpg', 0)
-#local['opposition'] = cv.imread('../media/opposition.jpg', 0)
-#local['sextile'] = cv.imread('../media/sextile.jpg', 0)
-#local['square'] = cv.imread('../media/square.jpg', 0)
-#local['trine'] = cv.imread('../media/trine.jpg', 0)
 
 
-
+@login_required(login_url="/accounts/login/")
 def view_create(request):
     global e_u, time_e, point, aspect
     if request.method == 'POST':
@@ -49,6 +32,10 @@ def view_create(request):
             # instance.author = request.user
             
             e_u = form.save(commit=False)
+            check_inst = User_info.objects.filter(name=instance.name,datetime=instance.datetime,latitude=instance.latitude,longitude=instance.longitude)
+            if check_inst.exists():
+                messages.error(request, "This data is already saved in database!!")
+                return redirect('chart:create')
             instance.save()
             if e_u != 0:
                 t, row, tsp = nt.get_angles(e_u.year, e_u.month, e_u.day, e_u.hour, e_u.minute, e_u.latitude, e_u.longitude)
@@ -86,7 +73,7 @@ def view_create(request):
         form = forms.TakeInput()
     return render(request, 'chart/input.html', { "form": form})
 
-
+@login_required(login_url="/accounts/login/")
 def view_show(request):
     # ts = nt.load.timescale()
     if e_u != 0:
@@ -94,3 +81,45 @@ def view_show(request):
         return render(request, 'chart/show.html', {'name':e_u.name,'aspect': aspect, 'point':point, 'time':time_e, 'lat':e_u.latitude, 'lon':e_u.longitude, 'natal_chart':ui.natal_chart, 'aspect_grid':ui.aspect_grid})
     else:
          return HttpResponse('No e_u found')
+
+@login_required(login_url="/accounts/login/")
+def view_search(request):
+    if request.method == 'POST':
+            return redirect('chart:search_results')
+    else:
+        form = forms.Search_Input()
+    return render(request, 'chart/search.html', {'form':form})
+
+def view_search_results(request):
+    # print(result['name'])
+    if request.method == 'POST':
+        form = forms.Search_Input(request.POST)
+        if form.is_valid():
+            stime = ts.utc(
+                int(form.data['syear']),
+                int(form.data['smonth']),
+                int(form.data['sday']),
+                int(form.data['shour']),
+                int(form.data['sminute'])
+            )
+            sresult = {
+                # 'name' : form.data['sname'],
+                'time' : stime.utc_jpl(),
+                'latitude' : form.data['slatitude'],
+                'longitude' : form.data['slongitude']
+            }
+            # ui = User_info.objects.filter(datetime = sresult['time'], latitude = sresult['latitude'], longitude = sresult['longitude'])
+            asp = Aspects.objects.filter(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
+            zod = Zodiac.objects.filter(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
+            if asp.exists() and zod.exists():
+                # print('no time for that', sresult['time'])
+                return render(request, 'chart/search_results.html', { 'asp':asp, 'zod':zod, 'results':sresult})
+
+            else:
+                # print(sresult['time'])
+                messages.error(request, "NO DATA FOUND!!")
+                # return HttpResponse('No such input in database')
+                return redirect('chart:search')
+    else:
+        messages.error(request, "NO INPUT GIVEN!!")
+        return redirect('chart:search')

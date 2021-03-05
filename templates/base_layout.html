@@ -14,6 +14,12 @@
             <ul>
                 {% if user.is_authenticated %}
                 <li>
+                    <a href="{% url 'chart:create' %}">Observe New</a>
+                </li>
+                <li>
+                    <a href="{% url 'chart:search' %}">Search Data</a>
+                </li>
+                <li>
                     <form action="{% url 'accounts:logout' %}" class="logout-link" method="POST">
                         {% csrf_token %}
                         <button type="submit">Logout</button>
@@ -21,16 +27,26 @@
                 </li>
                 {% else %}
                 <li>
-                    <a href="{% url 'accounts:login' %}">Login</a>
+                    <a href="{% url 'accounts:login' %}" class="login-link">Login</a>
                 </li> 
                 <li>
-                    <a href="{% url 'accounts:signup' %}">Signup</a>
+                    <a href="{% url 'accounts:signup' %}" class="signup-link">Signup</a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
     </header>
-    
+
+        {% if messages %}
+            {% for message in messages %}
+            <script>
+                alert('{{ message }}');
+            </script>
+            
+                
+            {% endfor %}
+        {% endif %} 
+   
     {% block content %}
 
     {% endblock %}
