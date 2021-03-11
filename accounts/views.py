@@ -5,8 +5,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
-# Create your views here.
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url="/accounts/login/")
 def view_signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -26,7 +27,7 @@ def view_login(request):
             #login
             user = form.get_user()
             login(request, user)
-            return redirect('chart:create')
+            return redirect('accounts:dash')
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form' : form})
@@ -35,3 +36,9 @@ def view_logout(request):
     if request.method == 'POST':
         logout(request)
         return redirect('accounts:login')
+
+
+@login_required(login_url="/accounts/login/")
+def view_dash(request):
+    return render(request, 'accounts/dash.html')
+

@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <h1>Calculate Natal Chart</h1>
+	 <h1><a href="{% url 'accounts:dash' %}" class="dash-link">Natal Chart</a></h1>
         <nav>
             <ul>
                 {% if user.is_authenticated %}
@@ -19,18 +19,14 @@
                 <li>
                     <a href="{% url 'chart:search' %}">Search Data</a>
                 </li>
+			{% if user.is_superuser %}
+                    	<li><a href="{% url 'accounts:signup' %}">Signup New Users</a></li>
+                	{% endif %}
                 <li>
                     <form action="{% url 'accounts:logout' %}" class="logout-link" method="POST">
                         {% csrf_token %}
                         <button type="submit">Logout</button>
                     </form>
-                </li>
-                {% else %}
-                <li>
-                    <a href="{% url 'accounts:login' %}" class="login-link">Login</a>
-                </li> 
-                <li>
-                    <a href="{% url 'accounts:signup' %}" class="signup-link">Signup</a>
                 </li>
                 {% endif %}
             </ul>

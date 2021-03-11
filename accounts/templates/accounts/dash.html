@@ -1,0 +1,35 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+<div class="wrapper">
+    <h2 class="dash-greet"> Hello {{request.user.username}} 
+        {% if user.is_superuser %}
+            (Logged in as admin)
+        {% endif %}
+    </h2>
+    <h2>
+        <p class="message-text"> 
+            What would you like to do?
+        </p>
+        <div class="images">
+            <figure>
+                <a href="{% url 'chart:create' %}">
+                    <img src="/static/thumb_natal.jpg" height="350px" width="350px" class="thumb_natal">
+                    <figcaption>Observe New Data</figcaption>
+                </a>
+                
+            </figure>
+            <figure>
+                <a href="{% url 'chart:search' %}">
+                    <img src="/static/thumb_search.jpg" height="300px" width="300px" class="thumb_search">
+                    <figcaption>Search data from Database</figcaption>
+                </a>
+                
+            </figure>
+        </div>
+        
+        
+    </h2>
+</div>
+
+{% endblock %}
