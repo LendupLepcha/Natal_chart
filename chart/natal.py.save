@@ -114,6 +114,8 @@ def intersect_circle(angle,r):
 
 
 def insert_image(imgA, p_name, x, y):
+    #local = 'static/'+p_name+'.jpg'
+    #obj = cv.imread(local, 0)
     obj = local[p_name]
     length, bredth = obj.shape
     len_half, bre_half = int(length/2), int(bredth/2)
@@ -143,17 +145,31 @@ def locate_arrow(angle,image,p_name,inner=True):
     # _clock
     xa, ya = intersect_circle(angle, r_a) #  for text
     # _clock
+    #print(" arrow start ")
     #img = cv.arrowedLine(image, (x_base+349,349-y_base), (x+349,349-y), 0, 1, tipLength= .5)
 #     img = cv.putText(img,p_name[:2],(xa+349,349-ya), font, .3,(0),1,cv.LINE_AA);
 #     img = cv.rectangle(img, (xa+349-7,349-ya-7), (xa+349+7,349-ya+7), 0, 1)
+    #print(" arrow end ")
     img = insert_image(image, p_name, xa+349, 349-ya)
+    #print(" imageinserted ")
     return img
 
 
 # # Read angles of planets
 def get_angles(y, m, d, h, mins, lat, lon):
+    # print('Enter Date and Time')
+    # y = int(input('Year: '))
+    # m = int(input('month: '))
+    # d = int(input('day: '))
+    # h = int(input('hour: '))
+    # mins = int(input('minute:'))
+    # sec = int(input('second: '))
     tx = ts.utc(y, m, d, h, mins)
     tsp = [ts.utc(y, m, d), ts.utc(y, m, d+1)]
+    #print('Date : ', tx.utc_jpl())
+    #print('Enter Location')
+    # lat = float(input('Latitude:'))
+    # lon = float(input('Longitude:'))
     coordinates = wgs84.latlon( lat, lon)
     location = earth + coordinates
     gg = location.at(tx)
@@ -173,7 +189,10 @@ def get_angles(y, m, d, h, mins, lat, lon):
 
 def check_row(degree, name, row):
     a = copy.deepcopy(row)
+#     i = list(Planet_names).index(name)
+#     r = a.pop(i)
     n = list(Planet_names).index(name) 
+    #print(n)
     a = a.drop(name)
     for j in range(n):
         if abs(degree-a[j])<2:
@@ -253,9 +272,12 @@ def rising(time, tsp):
             rise_t = i
     astro = location.at(rise_t).observe(sun).apparent()
     alt, az , dist = astro.altaz()
+#     print('Altitude', alt)
+#     print('Azimuth',az)
     horizon = location.at(time).from_altaz(alt_degrees = alt.degrees, az_degrees = az.degrees, distance = Distance(au = 1.3) )
     lat, lon, distance = horizon.ecliptic_latlon()
     As = lon.degrees
+#     print(dist)
     return As
 
 
@@ -302,6 +324,12 @@ def show_report(row, As, grid, t):
     planet.insert(0, "Ascendant", [As], True)
     # planet['Ascendant'] = As
     points = []
+    # for zs in zodiac:
+    #     if(angle >= zodiac[j][0] and angle < zodiac[j][1]):
+    #             de = angle - zodiac[j][0]
+    #             zz = zs
+    # points.append(['Ascendant', zz, de, 1, As])
+
     for i in planet:
         angle = planet[i][0]
         if angle>=360:
@@ -344,18 +372,36 @@ def draw_chart(t, rows, tsp, images_stat, entry_t):
     local = images_stat
     image = copy.copy(images_stat['chart_frame_equal_house'])
     grid_image= copy.copy(images_stat['aspect_grid_frame_withceres'])
+#     t, rows, tsp = get_angles()
     row = rows.loc[0]
+#    print('...1')
+    #image = copy.deepcopy(image_original)
+    #grid_image=copy.deepcopy(grid_original)
     inner_s = True
+    # print(Planet_names)
     for i, j in zip(row, Planet_names) :
         inner_s = check_row(i, j, row)
+#        print('1.1s ')
         image = locate_arrow(i, image, p_name = j, inner = inner_s)
+#    print('...2')
     As, image = houses(image, t, tsp)
+#    print('...3')
     grid = aspect_grid(row, Planet_names)
     grid_image = draw_grid(row, grid, grid_image)
+#    print('...4')
     point, aspect = show_report(row, As, grid, t)  #As
+#    print('...5')
     ui = User_info.objects.get(entry_time = entry_t)
+    #ret, buf = cv.imencode('.jpg', image) # cropped_image: cv2 / np array
+    #content = ContentFile(buf.tobytes())
+    #ui.image.save('natal_chart.jpg', content)
+    #cv.imwrite('media/natal_chart.jpg', image)
+    #cv.imwrite('media/aspect_grid.jpg', grid_image)
     image_data = im.fromarray(image)
     grid_data = im.fromarray(grid_image)
+ #   print('...6')
+    #image_data.save("/projects/natalchart/site/public/media/natal_chart_final.jpg", "JPEG")
+    #thumb_file = File(image_data)
     tempfile_io = BytesIO()
     image_data.save(tempfile_io, format='JPEG')
     image_file = InMemoryUploadedFile(tempfile_io, None, 'natal_chart_final.jpg','image/jpeg',tempfile_io.getbuffer().nbytes, None)
@@ -365,5 +411,8 @@ def draw_chart(t, rows, tsp, images_stat, entry_t):
     grid_data.save(tempfile_io2, format='JPEG')
     grid_file = InMemoryUploadedFile(tempfile_io2, None, 'aspect_grid_final.jpg','image/jpeg',tempfile_io2.getbuffer().nbytes, None)
     ui.aspect_grid.save('aspect_grid_final.jpg', grid_file)
-
+#ui.save()
+#    print("...7")
+#     print(point)
+#     print(aspect)
     return point, aspect

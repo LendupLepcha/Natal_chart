@@ -5,7 +5,7 @@ from .models import Zodiac, Aspects
 from . import natal as nt
 from django.contrib.auth.decorators import login_required
 ts = nt.load.timescale()
-from django.contrib import messages 
+from django.contrib import messages
 #from .models import Stat_Images
 import pickle
 import os
@@ -18,7 +18,6 @@ file_to_read.close()
 #print(images_stat['sun'])
 from .models import User_info
 
-
 @login_required(login_url="/accounts/login/")
 def view_create(request):
     global e_u, time_e, point, aspect
@@ -30,7 +29,6 @@ def view_create(request):
             time = ts.utc(instance.year, instance.month, instance.day, instance.hour, instance.minute)
             instance.datetime = time.utc_jpl()
             # instance.author = request.user
-            
             e_u = form.save(commit=False)
             check_inst = User_info.objects.filter(name=instance.name,datetime=instance.datetime,latitude=instance.latitude,longitude=instance.longitude)
             if check_inst.exists():
@@ -41,7 +39,6 @@ def view_create(request):
                 t, row, tsp = nt.get_angles(e_u.year, e_u.month, e_u.day, e_u.hour, e_u.minute, e_u.latitude, e_u.longitude)
                 point,aspect = nt.draw_chart(t, row, tsp, images_stat, e_u.entry_time)
                 time_e = t.utc_jpl()
-                
                 for i in aspect:
                     asp= Aspects()
                     asp.body1 = i[0]
@@ -114,7 +111,6 @@ def view_search_results(request):
             if asp.exists() and zod.exists():
                 # print('no time for that', sresult['time'])
                 return render(request, 'chart/search_results.html', { 'asp':asp, 'zod':zod, 'results':sresult})
-
             else:
                 # print(sresult['time'])
                 messages.error(request, "NO DATA FOUND!!")
