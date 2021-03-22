@@ -4,8 +4,8 @@
 
 
 <div class="wrapper">
-    <h2 >Search data</h2>
-    
+    <h1 >Search data</h1>
+    <h3> Hi {{request.user.username}}, please enter Date-Time and location(coordinates) of a previous observation</h3>    
     <form action="{% url 'chart:search_results' %}" method = "POST" class="search-form">
         {% csrf_token %}
         <p>Enter time (UTC +0:00):</p>

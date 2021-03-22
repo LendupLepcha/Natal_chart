@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 @login_required(login_url="/accounts/login/")
 def view_signup(request):
@@ -15,7 +16,8 @@ def view_signup(request):
             user = form.save()
             #login
             #login(request, user)
-            return redirect('accounts:login')
+            messages.warning(request, 'Account created')
+            return redirect('accounts:dash')
     else:
         form = UserCreationForm()
     return render(request, 'accounts/signup.html' , {'form' : form})

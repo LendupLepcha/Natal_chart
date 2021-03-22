@@ -2,8 +2,9 @@
 
 {% block content %}
 <div class="wrapper">
-	<h3> Hello {{request.user.username}} </h3>
+	<h1>Observe New Data</h1>
 	<h2 >Enter Time and Coordinates</h2>
+	<script src="/static/default_option.js"></script>
 	<form class ="site-form" method="POST" action="{% url 'chart:create' %}" enctype="multipart/form-data">
     		{% csrf_token %}
     		{{form}}
