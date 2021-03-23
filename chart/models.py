@@ -27,6 +27,20 @@ class Aspects(models.Model):
     lat = models.FloatField()
     lon = models.FloatField()
 
+class Magnetic_Data(models.Model):
+    entry_time = models.DateTimeField()
+    name = models.CharField(max_length=100, null= True, blank = True)
+    datetime = models.CharField(max_length=100)
+    lat = models.FloatField()
+    lon = models.FloatField()
+    X = models.FloatField()
+    Y = models.FloatField()
+    Z = models.FloatField()
+    F = models.FloatField()
+    area_code = models.CharField(max_length=10)
+    observatory = models.CharField(max_length=100)
+    graph = models.FileField(default='default.png', blank=True)
+
 class User_info(models.Model):
     entry_time = models.DateTimeField(auto_now_add=True)
     name = models.ForeignKey(User, on_delete = models.CASCADE)
