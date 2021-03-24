@@ -113,12 +113,13 @@ def view_search_results(request):
                 'latitude' : form.data['slatitude'],
                 'longitude' : form.data['slongitude']
             }
-            # ui = User_info.objects.filter(datetime = sresult['time'], latitude = sresult['latitude'], longitude = sresult['longitude'])
+            mag = Magnetic_Data.objects.get(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
+            ui = User_info.objects.get(datetime = sresult['time'], latitude = sresult['latitude'], longitude = sresult['longitude'])
             asp = Aspects.objects.filter(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
             zod = Zodiac.objects.filter(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
             if asp.exists() and zod.exists():
                 # print('no time for that', sresult['time'])
-                return render(request, 'chart/search_results.html', { 'asp':asp, 'zod':zod, 'results':sresult})
+                return render(request, 'chart/search_results.html', { 'asp':asp, 'zod':zod, 'mag':mag, 'results':sresult, 'aspect_grid':ui.aspect_grid, 'natal_chart':ui.natal_chart})
             else:
                 # print(sresult['time'])
                 messages.error(request, "NO DATA FOUND!!")

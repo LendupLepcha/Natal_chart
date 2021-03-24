@@ -12,6 +12,33 @@
         <h2>Location: <text id="lat_num">{{results.latitude}}</text> <text class="latitude" id="latitude">N</text>, <text id="lon_num">{{results.longitude}}</text> <text class="longitude" id="longitude">E</text> </h2>
     <script src="/static/directions.js"></script>
     </h3>
+    <div class="Magnetic-data">
+        <table class= "magnetic-data-table">
+            <caption style="text-align:center">Magnetic Data</caption> 
+            <tr>
+                <th>Date/Time(UTC)</th>
+                <th>Observatory</th>
+                <th>Xn(T)</th>
+                <th>Yn(T)</th>
+                <th>Zn(T)</th>
+                <th>Fn(T)</th>
+            </tr>
+            <tr>
+                <td>{{mag.datetime}}</td>
+                <td>{{mag.observatory}} ({{mag.area_code}})</td>
+                <td>{{mag.X}}</td>
+                <td>{{mag.Y}}</td>
+                <td>{{mag.Z}}</td>
+                <td>{{mag.F}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="graph">
+        <figure>
+            <img src="{{ mag.graph.url }} " class="magnetic-graph">
+            <figcaption>Magnetic data</figcaption>
+        </figure>
+    </div>
     <div class="result_tables">
         <table class="aspect_grid_report" style="overflow-y:scroll" >
             <caption style="text-align:center">Aspects:</caption> 
@@ -59,5 +86,16 @@
             {% endfor %}
         </table>
     </div>
+    <div class="images">
+        <figure  >
+            <img src="{{aspect_grid.url}}" class="aspect_grid">
+            <figcaption>Aspect Grid</figcaption>
+        </figure>
+        <figure >
+            <img src="{{natal_chart.url}}" class="natal_chart">
+            <figcaption>Natal Chart</figcaption>
+        </figure>   
+    </div>
 </div>
+
 {% endblock %}
