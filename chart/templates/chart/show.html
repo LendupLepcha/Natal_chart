@@ -10,17 +10,49 @@
     <h2>Location: <text id="lat_num">{{lat}}</text> <text class="latitude" id="latitude">N</text>, <text id="lon_num">{{lon}}</text> <text class="longitude" id="longitude">E</text> </h2>
     <script src="/static/directions.js"></script>
     
+    <div class="divider-charts">
+        <h1>Charts Generated</h1>
+    </div>
     <div class="images">
         <figure  >
-            <img src="{{ aspect_grid.url }}" class="aspect_grid">
+            <img src="/media/aspect_grid.jpg" class="aspect_grid">
             <figcaption>Aspect Grid</figcaption>
         </figure>
         <figure >
-            <img src="{{ natal_chart.url }}" class="natal_chart">
+            <img src="/media/natal_chart.jpg" class="natal_chart">
             <figcaption>Natal Chart</figcaption>
+        </figure>   
+    </div>
+    <div class="graph">
+        <figure>
+            <img src="{{ mags.graph.url }} " class="magnetic-graph">
+            <figcaption>Magnetic data</figcaption>
         </figure>
-        
-        
+    </div>
+
+    <div class="divider-report">
+        <h1>REPORT</h1>
+    </div>
+    <div class="Magnetic-data">
+        <table class= "magnetic-data-table">
+            <caption style="text-align:center">Magnetic Data</caption> 
+            <tr>
+                <th>Date/Time(UTC)</th>
+                <th>Observatory</th>
+                <th>Xn(T)</th>
+                <th>Yn(T)</th>
+                <th>Zn(T)</th>
+                <th>Fn(T)</th>
+            </tr>
+            <tr>
+                <td>{{mags.datetime}}</td>
+                <td>{{mags.observatory}} ({{mags.area_code}})</td>
+                <td>{{mags.X}}</td>
+                <td>{{mags.Y}}</td>
+                <td>{{mags.Z}}</td>
+                <td>{{mags.F}}</td>
+            </tr>
+        </table>
     </div>
     <div class= "result_tables">
         <table class="points_report">  

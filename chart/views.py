@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from . import forms
-from .models import Zodiac, Aspects
+from .models import Zodiac, Aspects, Magnetic_Data
 
 from . import magnetics as mg
 from . import natal as nt
@@ -81,8 +81,9 @@ def view_create(request):
 def view_show(request):
     # ts = nt.load.timescale()
     if e_u != 0:
+        mags = Magnetic_Data.objects.get(entry_time = e_u.entry_time)
         ui = User_info.objects.get(entry_time = e_u.entry_time)
-        return render(request, 'chart/show.html', {'name':e_u.name,'aspect': aspect, 'point':point, 'time':time_e, 'lat':e_u.latitude, 'lon':e_u.longitude, 'natal_chart':ui.natal_chart, 'aspect_grid':ui.aspect_grid})
+        return render(request, 'chart/show.html', {'name':e_u.name,'aspect': aspect, 'point':point, 'time':time_e, 'lat':e_u.latitude, 'lon':e_u.longitude, 'natal_chart':ui.natal_chart, 'aspect_grid':ui.aspect_grid, 'mags':mags})
     else:
          return HttpResponse('No e_u found')
 
