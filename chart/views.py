@@ -27,6 +27,10 @@ def view_create(request):
         form = forms.TakeInput(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
+            the_year = instance.year
+            if(the_year>2020 or the_year<2000):
+                messages.error(request, "Please enter a date between the year 2000 and 2020")
+                return redirect('chart:create')
             #instance.name = request.user
             time = ts.utc(instance.year, instance.month, instance.day, instance.hour, instance.minute)
             instance.datetime = time.utc_jpl()
