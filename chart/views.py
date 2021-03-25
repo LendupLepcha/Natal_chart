@@ -113,7 +113,12 @@ def view_search_results(request):
                 'latitude' : form.data['slatitude'],
                 'longitude' : form.data['slongitude']
             }
-            mag = Magnetic_Data.objects.get(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
+            try:
+                mag = Magnetic_Data.objects.get(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
+            except Exception as err:
+                print(err)
+                messages.error(request, "NO DATA FOUND!!")
+                return redirect('chart:search')
             ui = User_info.objects.get(datetime = sresult['time'], latitude = sresult['latitude'], longitude = sresult['longitude'])
             asp = Aspects.objects.filter(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
             zod = Zodiac.objects.filter(datetime = sresult['time'], lat = sresult['latitude'], lon = sresult['longitude'])
